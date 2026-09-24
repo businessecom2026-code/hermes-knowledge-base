@@ -1,0 +1,4 @@
+interface:
+  display_name: "LLM Council"
+  short_description: "Auditorias e decisões com múltiplos modelos"
+  default_prompt: "Use $llm-council para auditar este trabalho com opiniões independentes e uma síntese final."
