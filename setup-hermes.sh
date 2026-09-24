@@ -140,6 +140,20 @@ mk_profile sintetizador    combo/orchestrator     "Consolida o resultado de vari
 N=$(ls "$HD/profiles" | wc -l | tr -d ' ')
 say "  $N profiles no diretório."
 
+# ---- 4b. plugins ----------------------------------------------------------
+SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -d "$SRC_DIR/plugins" ]; then
+  say "Instalando plugins..."
+  mkdir -p "$HD/plugins"
+  for pl in "$SRC_DIR/plugins"/*; do
+    [ -d "$pl" ] || continue
+    nm="$(basename "$pl")"
+    [ -e "$HD/plugins/$nm" ] && mv "$HD/plugins/$nm" "$HD/plugins/$nm.bak-$STAMP"
+    cp -R "$pl" "$HD/plugins/$nm"
+    say "  $nm"
+  done
+fi
+
 # ---- 5. conferência -------------------------------------------------------
 say ""
 say "==================== PRONTO ===================="
@@ -147,8 +161,8 @@ say "Configurado: provider omniroute, modelo padrão combo/orchestrator, $N prof
 say ""
 say "FALTA VOCÊ FAZER 3 COISAS:"
 say ""
-say "1) OmniRoute rodando em http://127.0.0.1:20128/v1"
-say "   npm install -g omniroute   (depois inicie o serviço)"
+say "1) Instalar as ferramentas externas:"
+say "   bash setup-tools.sh"
 say ""
 say "2) A chave, no arquivo $HD/.env :"
 say "   OMNIROUTE_API_KEY=<sua chave>"

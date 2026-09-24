@@ -1,44 +1,79 @@
-# Base de conhecimento Hermes — skills
+# Base de conhecimento Hermes
 
-Pacote com a base de skills usada no Hermes principal. São ~895 skills
-(design, dev, ads, SEO, marca, conteúdo, pesquisa, segurança, compliance,
-processo, produtividade e mais).
+Tudo que um Hermes novo precisa para trabalhar igual ao original:
+**895 skills**, a configuração de roteamento, os 20 profiles especialistas,
+os plugins e a lista de ferramentas externas.
 
-## Instalar
+Nenhuma chave, token ou dado pessoal está neste repositório.
+
+## Ordem de instalação
 
 ```bash
-git clone https://github.com/OWNER/REPO.git hermes-kb && cd hermes-kb && bash install.sh
+# 1. baixar
+git clone https://github.com/businessecom2026-code/hermes-knowledge-base.git ~/hermes-kb
+cd ~/hermes-kb
+
+# 2. configuração: provider, profiles, plugins
+bash setup-hermes.sh
+
+# 3. ferramentas externas (omniroute, claude, codex, firecrawl...)
+bash setup-tools.sh
+
+# 4. a chave, à mão, no .env do Hermes:
+#    OMNIROUTE_API_KEY=<sua chave>
+
+# 5. abrir o Hermes e, de dentro dele, instalar as skills:
+bash install.sh
 ```
 
-O instalador:
+Os passos 2 e 3 rodam fora do Hermes (pode ser pelo Claude Code).
+O passo 5 roda de dentro do Hermes já configurado.
 
-1. Detecta sozinho onde o Hermes guarda skills (Windows, macOS ou Linux).
-2. Copia tudo para lá **sem apagar nada** — se já existir uma skill com o
-   mesmo nome, a antiga vira `nome.bak-<data>` ao lado.
-3. Mostra no fim quantas skills ficaram disponíveis.
+## O que cada script faz
 
-Depois: reinicie o Hermes e rode `skills_list` pra conferir.
-
-## O que tem dentro
-
-| Pasta | Vai para | Conteúdo |
+| Script | Faz | Não faz |
 |---|---|---|
-| `skills/` | `<hermes>/skills/` | base principal, organizada por categoria |
-| `hermes-skills-extra/` | `<hermes>/skills/` | skills que só existiam no diretório legado |
-| `agents-skills/` | `~/.agents/skills/` | skills de agente (Claude Code / caveman etc.) |
+| `setup-hermes.sh` | provider omniroute, `combo/orchestrator` como padrão, 3 fallbacks, 20 profiles, 2 plugins | não toca em skills, não escreve chave |
+| `setup-tools.sh` | instala omniroute, claude, codex, opencode, firecrawl, camofox; avisa sobre o dcg | não faz login por você |
+| `install.sh` | copia as 895 skills para o diretório certo | não apaga nada — o que existe vira `.bak-<data>` |
 
-## Se o Hermes estiver em outro lugar
+Todos detectam sozinhos onde o Hermes está (Windows, macOS, Linux) e fazem
+backup antes de sobrescrever. Para apontar manualmente:
 
 ```bash
-HERMES_HOME=/caminho/do/hermes bash install.sh
+HERMES_HOME=/caminho/do/hermes bash setup-hermes.sh
 ```
+
+## Conteúdo
+
+| Pasta | Vai para | O que é |
+|---|---|---|
+| `skills/` | `<hermes>/skills/` | 300 categorias: design, dev, ads, SEO, marca, conteúdo, pesquisa, security, compliance, processo |
+| `agents-skills/` | `~/.agents/skills/` | 172 skills de agente |
+| `hermes-skills-extra/` | `<hermes>/skills/` | 4 skills do diretório legado |
+| `plugins/` | `<hermes>/plugins/` | agency-agents-router, orca-status |
+| `REPOSITORY_CATALOG.md` | — | inventário dos repos de referência. **Listar não autoriza executar**: revise licença, dependências e permissões antes de usar qualquer item |
+
+## Os 20 profiles
+
+**Produtores:** dev, conteudo, copywriter, ads, trafego, seo, pesquisa, marca
+
+**Auditores:** auditordev, auditorconteudo, auditorcopy, auditorads,
+auditortrafego, auditorseo, auditorlgpd, auditorsec, auditormarca
+
+**Verificação:** testador, confirmador, sintetizador
+
+Cada um aponta para um `combo/*` do OmniRoute — quem escolhe o modelo real,
+faz fallback e controla cota é o roteador.
+
+## Depende de
+
+- **Node.js** (para o `setup-tools.sh`)
+- **Python** (para o `setup-hermes.sh` ajustar o config)
+- **OmniRoute rodando** em `http://127.0.0.1:20128/v1` — sem ele, todo `combo/*` falha
+- **dcg** (opcional, recomendado): bloqueia comando destrutivo antes de executar
 
 ## Desfazer
 
-As versões anteriores ficam como `*.bak-<data>` no próprio diretório de
-skills. Apague ou renomeie de volta manualmente.
-
-## Nota
-
-Não há segredo, token, credencial nem dado pessoal neste pacote — só
-documentação, templates e scripts de skill.
+Tudo que foi sobrescrito vira `*.bak-<data>` no mesmo lugar, e o config antigo
+fica como `config.yaml.antes-do-setup-<data>`.
